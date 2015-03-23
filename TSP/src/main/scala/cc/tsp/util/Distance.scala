@@ -41,7 +41,9 @@ object Distance {
     import Configuration._
     val xy1 = xy(city1)
     val xy2 = xy(city2)
-    Math.sqrt((xy1._1 - xy2._1) * (xy1._1 - xy2._1) + (xy1._2 - xy2._2) * (xy1._2 - xy2._2)).toInt
+    // from doc.Pseudo-Euclidean distance.
+    //http://debian.cse.msu.edu/CSE/pub/GA/programs/Genocop-doc/TSP/READ_ME (ATT)
+    Math.ceil(Math.sqrt(((xy1._1 - xy2._1) * (xy1._1 - xy2._1) + (xy1._2 - xy2._2) * (xy1._2 - xy2._2)) / 10.0)).toInt
   }
 
 }
