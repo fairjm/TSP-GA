@@ -6,6 +6,7 @@ package cc.tsp
 import cc.tsp.util.Configuration
 import scala.collection.mutable.ListBuffer
 import java.util.concurrent.{ ThreadLocalRandom => TLRandom }
+import scala.collection.mutable.ArrayBuffer
 
 case class Chromosome(dna: List[Int])
 
@@ -14,9 +15,9 @@ object Chromosome {
   lazy val cityList = (1 to citySize).toList
 
   /**
-   * the crossOverPosition is in the 1/2 of the city size
+   * the crossOverPosition is in the 1/3 of the city size
    */
-  val crossOverPosition = citySize / 4
+  val crossOverPosition = citySize / 3
 
   def generate = Chromosome(scala.util.Random.shuffle(cityList))
 
@@ -48,22 +49,30 @@ object Chromosome {
    * @return Chromosome
    */
   def mutation(g: Chromosome): Chromosome = {
-    val newDna = ListBuffer[Int]()
-    newDna ++= g.dna
     val random = TLRandom.current()
-    val p1 = random.nextInt(citySize)
-    val p2 = {
-      var tmp = random.nextInt(citySize)
-      while (tmp == p1) {
-        tmp = random.nextInt(citySize)
+
+    def mutationInner(g: Chromosome, count: Int): Chromosome = {
+      if (count <= 0) g
+      else {
+        val newDna = ArrayBuffer[Int]()
+        newDna ++= g.dna
+
+        val p1 = random.nextInt(citySize)
+        val p2 = {
+          var tmp = random.nextInt(citySize)
+          while (tmp == p1) {
+            tmp = random.nextInt(citySize)
+          }
+          tmp
+        }
+        val v1 = newDna(p1)
+        val v2 = newDna(p2)
+        newDna.update(p1, v2)
+        newDna.update(p2, v1)
+        Chromosome(newDna.toList)
       }
-      tmp
     }
-    val v1 = newDna(p1)
-    val v2 = newDna(p2)
-    newDna.update(p1, v2)
-    newDna.update(p2, v1)
-    Chromosome(newDna.toList)
+    mutationInner(g, random.nextInt(1, citySize))
   }
 }
 

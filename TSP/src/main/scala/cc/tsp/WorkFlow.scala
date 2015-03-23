@@ -20,19 +20,18 @@ object WorkFlow {
       lastPopulation
     } else {
       val fitness = Fitness.calculate(lastPopulation)
+      // show infos
       fitness.take(10).foreach(r => println(r._2))
       fitness.take(10).foreach(r => println(Distance.loopDistance(r._1.dna)))
-      // keep the chromosome that has the highest fitness
+      // keep the chromosome that has the high fitness
       println(lastPopulation.generationNum + " gen " + lastPopulation.chromosomes.distinct.size)
       println("=================")
-      val keeped = fitness.take(keepedSize).map(_._1)
+      val keeped = fitness.distinct.take(keepedSize).map(_._1)
 
       val choosed = Roulette.choose(fitness, chromosomeSize - keepedSize)
-      val t = System.currentTimeMillis()
       val crossOverPairNum = ((choosed.size * crossOverRate) / 2).toInt
       println("crossOverPairNum:" + crossOverPairNum)
       val crossOvered = crossOver(choosed, crossOverPairNum)
-      println("time:" + (System.currentTimeMillis() - t))
       val mutationNum = (crossOvered.size * mutationRate).toInt
       val mutated = mutate(crossOvered, mutationNum)
       iterate(Population(keeped ::: mutated, lastPopulation.generationNum + 1))
@@ -45,8 +44,8 @@ object WorkFlow {
     } else {
       val random = TLRandom.current()
       scala.util.Random.shuffle(cs).sliding(2, 2).toList.flatMap(_ match {
-        case l @ x :: Nil                => l
-        case l @ x :: y :: Nil if x == y => l
+        case l @ x :: Nil            => l
+        case x :: y :: Nil if x == y => List(x, Chromosome.generate)
         case x :: y :: Nil if crossOverRate > random.nextDouble() =>
           val r = Chromosome.crossOver(x, y); List(r._1, r._2)
         case x => x
