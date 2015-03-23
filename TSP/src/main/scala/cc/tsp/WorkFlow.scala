@@ -39,30 +39,18 @@ object WorkFlow {
     }
   }
 
-  private def crossOver(cs: List[Chromosome], pairNum: Int): List[Chromosome] = {
+  private def crossOver(cs: List[Chromosome], crossOverRate: Double): List[Chromosome] = {
     if (crossOverRate <= 0) {
       cs
     } else {
       val random = TLRandom.current()
-      var csBuffer = ArrayBuffer[Chromosome]()
-      val crossed = ArrayBuffer[Chromosome]()
-      csBuffer ++= cs
-      for (
-        i <- 1 to pairNum if csBuffer.distinct.size > 1
-      ) {
-        var index1 = 0
-        var index2 = 0
-        while (csBuffer(index2) == csBuffer(index1)) {
-          index1 = random.nextInt(csBuffer.size - 1)
-          //keep index2 is larger than index1 that we can firstly remove index2 and keep the elem in index1 still
-          index2 = random.nextInt(index1 + 1, csBuffer.size)
-        }
-        val c2 = csBuffer.remove(index2)
-        val c1 = csBuffer.remove(index1)
-        val (newC1, newC2) = Chromosome.crossOver(c1, c2)
-        crossed += newC1 += newC2
-      }
-      csBuffer.toList ++ crossed.toList
+      scala.util.Random.shuffle(cs).sliding(2, 2).toList.flatMap(_ match {
+        case l @ x :: Nil                => l
+        case l @ x :: y :: Nil if x == y => l
+        case x :: y :: Nil if crossOverRate > random.nextDouble() =>
+          val r = Chromosome.crossOver(x, y); List(r._1, r._2)
+        case x => x
+      })
     }
   }
 

@@ -22,9 +22,9 @@ object Configuration {
 
   val mutationRate = 0.01
 
-  val chromosomeSize = 300
+  val chromosomeSize = 1000
 
-  val maxGenerationnNum = 1000
+  val maxGenerationnNum = 10000
 
   def withResource[T](fileName: String)(op: Source => T): T = {
     val s = Try(Source.fromFile(fileName))

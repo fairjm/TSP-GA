@@ -16,7 +16,7 @@ object Chromosome {
   /**
    * the crossOverPosition is in the 1/2 of the city size
    */
-  val crossOverPosition = citySize / 2
+  val crossOverPosition = citySize / 4
 
   def generate = Chromosome(scala.util.Random.shuffle(cityList))
 
